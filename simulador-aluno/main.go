@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"github.com/codeedu/imersaofsfc2-simulador/infra/kafka"
@@ -17,7 +16,6 @@ func init() {
 }
 
 func main() {
-	log.Println("topic: " + os.Getenv("KafkaProduceTopic"))
 	producer := kafka.NewKafkaProducer()
 	kafka.Publish("ola terraquios...", "readtest", producer)
 
