@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/codeedu/imersaofsfc2-simulador/infra/kafka"
 	"github.com/joho/godotenv"
+	"github.com/thgvieira/code-delivery/infra/kafka"
 )
 
 func init() {
