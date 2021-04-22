@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/thgvieira/code-delivery/infra/kafka"
+
+	kafka2 "github.com/thgvieira/code-delivery/simulador-aluno/application/kafka"
+
+	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 func init() {
@@ -16,15 +20,12 @@ func init() {
 }
 
 func main() {
-	producer := kafka.NewKafkaProducer()
-	kafka.Publish("ola terraquios...", "readtest", producer)
+	msgChan := make(chan *ckafka.Message)
+	consumer := kafka.NewKafkaConsumer(msgChan)
+	go consumer.Consume()
 
-	log.Println("Init the main")
-
-	for {
-		_ = 1
-
-		time.Sleep(1 * time.Second)
-		kafka.Publish("Mensagem ...", "readtest", producer)
+	for msg := range msgChan {
+		fmt.Println(string(msg.Value))
+		go kafka2.Produce(msg)
 	}
 }
