@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 
 // NewKafkaProducer creates a ready to go kafka.Producer instance
 func NewKafkaProducer() *ckafka.Producer {
+	fmt.Println("NewKafkaProducer")
 	configMap := &ckafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KafkaBootstrapServers"),
 	}

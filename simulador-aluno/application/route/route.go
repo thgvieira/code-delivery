@@ -10,18 +10,18 @@ import (
 )
 
 type Route struct {
-	ID        string     `json: "id"`
-	ClientID  string     `json: "clientId"`
-	Positions []Position `json: "positions"`
+	ID        string     `json:"routeId"`
+	ClientID  string     `json:"clientId"`
+	Positions []Position `json:"position"`
 }
 
 type Position struct {
-	Lat  float64 `json: "lat"`
-	Long float64 `json: "long"`
+	Lat  float64 `json:"lat"`
+	Long float64 `json:"long"`
 }
 
 type PartialRoutePosition struct {
-	ID       string    `json:"id"`
+	ID       string    `json:"routeId"`
 	ClientID string    `json:"clientId"`
 	Position []float64 `json:"position"`
 	Finished bool      `json:"finished"`
@@ -31,33 +31,38 @@ func NewRoute() *Route {
 	return &Route{}
 }
 
-func (r *Route) LoadPositions() error {
-	if r.ID == "" {
+func (route *Route) LoadPositions() error {
+	if route.ID == "" {
 		return errors.New("route id not informed")
 	}
-	f, err := os.Open("destinations/" + r.ID + ".txt")
-	if err != nil {
-		return err
+
+	file, erro := os.Open("destinations/" + route.ID + ".txt")
+
+	if erro != nil {
+		return erro
 	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
 	for scanner.Scan() {
 		data := strings.Split(scanner.Text(), ",")
-		lat, err := strconv.ParseFloat(data[0], 64)
-		if err != nil {
-			return nil
-		}
-		long, err := strconv.ParseFloat(data[1], 64)
-		if err != nil {
+		lat, erro := strconv.ParseFloat(data[1], 64)
+		if erro != nil {
 			return nil
 		}
 
-		r.Positions = append(r.Positions, Position{
+		long, erro := strconv.ParseFloat(data[0], 64)
+		if erro != nil {
+			return nil
+		}
+
+		route.Positions = append(route.Positions, Position{
 			Lat:  lat,
 			Long: long,
 		})
 	}
-
 	return nil
 }
 
@@ -65,6 +70,7 @@ func (r *Route) ExportJsonPositions() ([]string, error) {
 	var route PartialRoutePosition
 	var result []string
 	total := len(r.Positions)
+
 	for k, v := range r.Positions {
 		route.ID = r.ID
 		route.ClientID = r.ClientID
@@ -73,12 +79,14 @@ func (r *Route) ExportJsonPositions() ([]string, error) {
 		if total-1 == k {
 			route.Finished = true
 		}
-		jsonRoute, err := json.Marshal(route)
-		if err != nil {
-			return nil, err
+
+		jsonRoute, erro := json.Marshal(route)
+
+		if erro != nil {
+			return nil, erro
 		}
+
 		result = append(result, string(jsonRoute))
 	}
-
 	return result, nil
 }

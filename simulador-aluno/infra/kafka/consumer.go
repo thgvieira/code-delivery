@@ -23,6 +23,7 @@ func NewKafkaConsumer(msgChan chan *ckafka.Message) *KafkaConsumer {
 
 // Consume consumes all message pulled from apache kafka and sent it to message channel
 func (k *KafkaConsumer) Consume() {
+	fmt.Println("Consume")
 	configMap := &ckafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KafkaBootstrapServers"),
 		"group.id":          os.Getenv("KafkaConsumerGroupId"),
